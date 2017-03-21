@@ -1,81 +1,126 @@
 window.onload = function(){
     var image = document.getElementById("image");
-    image.addEventListener("mousedown", makeGrid );
-    image.addEventListener("mousemove", resizeGrid );
-    image.addEventListener("mouseup", fillGrid );
+        image.addEventListener("mousedown", makeGrid );
+        image.addEventListener("mousemove", resizeGrid );
+        image.addEventListener("mouseup", fillGrid );
+
     var save  = document.getElementById("saveCurMarkup");
-    save.addEventListener("click", saveToJson);
+        save.addEventListener("click", saveToJson);
     
-    var coords = {};
-    var origin = [];
-    var origPos  = [];
-    var moveOrigin =[];
-    var isDown = false;
-    var selected = false;
-    var showArr = document.getElementById("show");
-    showArr.addEventListener("click", showArray );
-    var show2 = document.getElementById("show2");
-    show2.addEventListener("click", dataShow );
+    var coords =     {};
+    var origin =     [];
+    var origPos  =   [];
+    var moveOrigin = [];
     var idTo = 0;
+    var isDown =     false;
+    var selected =   false;
+    var showArr = document.getElementById("show");
+        showArr.addEventListener("click", showArray );
+    var show2 = document.getElementById("show2");
+        show2.addEventListener("click", dataShow );
+    var pattern = document.getElementById("makeAsPattern");
+        pattern.addEventListener("click", makeLike);
+    
     var process = document.getElementById("processIt");
     var data = document.getElementById("data");
     init();
 
-
-//hz
-function dataShow(){
-    var el = document.getElementsByTagName("li")[idTo];
-    alert(idTo);
-    if(coords.hasOwnProperty(idTo)){
-        alert(`top:${coords[idTo].top}, left:${coords[idTo].left}, width:${coords[idTo].width}, height:${coords[idTo].height}, col&row:${coords[idTo].col},${coords[idTo].row}`);
+//Обрезать по шаблону
+function makeLike(){
+    if(document.getElementById("grid")){
+        var li_s = document.getElementsByTagName("li");
+        var length = li_s.length;
+        for(var i=0; i<length; i+=1){
+            coords[i] = setJSONProp();
+        }
+        if(coords[length-1]){
+            data.value = JSON.stringify(coords);
+            process.disabled = false;
+        }
+        document.getElementById('id01').style.display='none';
+    }
+    else{
+        alert("Please Make Grid!");
     }
 }
 
 
 
+//Информация по массиву
+function dataShow(){
+    var el = document.getElementsByTagName("li")[idTo];
+    if(coords.hasOwnProperty(idTo)){
+        alert(`top:${coords[idTo].top}, 
+            left:${coords[idTo].left}, 
+            width:${coords[idTo].width}, 
+            height:${coords[idTo].height}, 
+            col&row:${coords[idTo].col},${coords[idTo].row}`);
+    }
+}
+
+
+//Сохранение параметров обрезки в JSON-нотацию
 function saveToJson(){
     if(document.getElementById("grid")){
         coords[idTo] = setJSONProp();
         document.getElementById('id01').style.display='none';
         var length = document.getElementsByTagName("li").length;
-        alert(length-1);
         if(coords[length-1]){
             data.value = JSON.stringify(coords);
             process.disabled = false;
-        }
-        
+        }        
     }else{
         alert("Please Make Grid!");
-    }
-     
+    } 
 }
 
 
 
+//Возвращает параметры выделенной области
+function setJSONProp(){
+    var percX = image.offsetWidth/100;
+    var percY = image.offsetHeight/100;
+    var grid = document.getElementById("grid");
+    var gridX = grid.offsetWidth/percX;
+    var gridY = grid.offsetHeight/percY;
+    var gridLeft = parseInt(grid.style.left)/percX;
+    var gridTop = parseInt(grid.style.top)/percY;
+    var col = document.getElementById("col").value;
+    var row = document.getElementById("row").value;
+    
+    return {top:gridTop, left: gridLeft, width: gridX, height: gridY, col:col, row:row};
+}
+
+
+
+//Первоначальное состояние
 function init(){
     var grid = document.getElementById("grid");
     var li_s = document.getElementsByTagName("li");
     var length = li_s.length;
     var pic = image.getElementsByTagName("img")[0];
     for(var i=0; i<length; i++){
-        li_s[i].addEventListener("click", function(e){
-            idTo =  e.target.getAttribute("idToProcess");
-            var data = e.target.getAttribute("data");
-            pic.setAttribute("src", data);
-            if(document.getElementById("grid")){
-                image.removeChild(document.getElementById("grid"));
-            }
-            document.getElementById('id01').style.display='block';
+        li_s[i].addEventListener(
+            "click", 
+            function(e){
+                idTo =  e.target.getAttribute("idToProcess");
+                var data = e.target.getAttribute("data");
+                pic.setAttribute("src", data);
+                if(document.getElementById("grid")){
+                    image.removeChild(document.getElementById("grid"));
+                }
+                document.getElementById('id01').style.display='block';
         });
     }
 }    
 
+
 /*ОГОНЬ С ГРИДОМ*/   
 function makeGrid(e){
 //очистка сетки    
-if(document.getElementById("grid")){
-    image.removeChild(document.getElementById("grid"));
-}
+    if(document.getElementById("grid")){
+        image.removeChild(document.getElementById("grid"));
+    }
     isDown = true;
     var position = getOffsetRect(image);
     origin[0] = e.pageX-position.left;
@@ -108,21 +153,21 @@ function resizeGrid(e){
 }
 
 function fillGrid(){
-        isDown = false;
-        var col = document.getElementById("col").value;
-        var row = document.getElementById("row").value;
-        var grid = document.getElementById("grid");
-        var gridW = grid.offsetWidth;
-        var gridH = grid.offsetHeight;
+    isDown = false;
+    var col = document.getElementById("col").value;
+    var row = document.getElementById("row").value;
+    var grid = document.getElementById("grid");
+    var gridW = grid.offsetWidth;
+    var gridH = grid.offsetHeight;
         
     if(gridW>50 && gridH>50){    
         for(var i=0; i<row; i++){
-                var elementContainer = document.createElement('div');
-                elementContainer.style.width = "100%";
-                elementContainer.style.height = `calc(100% / ${row})`;
-                elementContainer.style.display = "flex";
-                elementContainer.style.flexDirection = "row";
-                elementContainer.style.justifyContent = "space-between";
+            var elementContainer = document.createElement('div');
+            elementContainer.style.width = "100%";
+            elementContainer.style.height = `calc(100% / ${row})`;
+            elementContainer.style.display = "flex";
+            elementContainer.style.flexDirection = "row";
+            elementContainer.style.justifyContent = "space-between";
             for(var j=0; j<col;j++){
                 var gridElement = document.createElement('div');
                 gridElement.style.width = `calc(100% / ${col} - 2px)`;
@@ -150,6 +195,7 @@ function mouseDownGrid(e){
     moveOrigin[0] = e.pageX-parseInt(grid.style.left);
     moveOrigin[1] = e.pageY-parseInt(grid.style.top);
 }
+
 function mouseMoveGrid(e){
     if(selected && isDown){
     var grid = document.getElementById("grid");
@@ -159,6 +205,7 @@ function mouseMoveGrid(e){
     grid.style.top = y+"px";
     }
 }
+
 function mouseUpGrid(e){
     e.stopPropagation();
     isDown = false;
@@ -170,23 +217,12 @@ function mouseUpGrid(e){
 
 
 /*ЖАРА С МАССИВОМ*/
-    function showArray(){
-        alert(`top:${coords["0"].top}, left:${coords["0"].left}, X:${coords["0"].width}, Y:${coords["0"].height}`);
-        /*var grid =document.getElementById("grid");
-        if(grid){
-            var x,y,imageX,imageY,gridX,gridY;
-            var image = document.getElementById("image");
-            imageX = image.offsetWidth;
-            imageY = image.offsetHeight;
-            gridX = parseInt(grid.style.left);
-            gridY = parseInt(grid.style.top);
-            x = gridX/(imageX/100);
-            y = gridY/(imageY/100);
-            gridW = grid.offsetWidth;
-            gridH = grid.offsetHeight;
-            alert(`gridW:${gridW},gridH:${gridH}, posX%:${x},posY%:${y}`);
-        }*/
-    }
+function showArray(){
+    alert(`top:${coords["0"].top}, left:${coords["0"].left}, X:${coords["0"].width}, Y:${coords["0"].height}`);
+}
+
+
+
 /*адидас с положение окна */
 function getOffsetRect(elem) {
     // (1)
@@ -209,20 +245,6 @@ function getOffsetRect(elem) {
     var left = box.left + scrollLeft - clientLeft;
 
     return { top: Math.round(top), left: Math.round(left)};
-}
-
-function setJSONProp(){
-    var percX = image.offsetWidth/100;
-    var percY = image.offsetHeight/100;
-    var grid = document.getElementById("grid");
-    var gridX = grid.offsetWidth/percX;
-    var gridY = grid.offsetHeight/percY;
-    var gridLeft = parseInt(grid.style.left)/percX;
-    var gridTop = parseInt(grid.style.top)/percY;
-    var col = document.getElementById("col").value;
-    var row = document.getElementById("row").value;
-    
-    return {top:gridTop, left: gridLeft, width: gridX, height: gridY, col:col, row:row};
 }
 
 };

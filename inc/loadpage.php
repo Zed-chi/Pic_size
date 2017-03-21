@@ -1,5 +1,10 @@
 <div class="w3-container w3-dark-grey w3-card-4">
-	<a href="index.php"><h1 class="w3-center w3-xxlarge">Image-Slicer</h1></a>
+	<a href="index.php">
+		<h1 class="w3-center w3-xxlarge">
+			<i class="fa fa-file-image-o" aria-hidden="true"></i> 
+			Image-Slicer
+		</h1>
+	</a>
 </div>
 
 <div class="w3-card-4 w3-grey w3-padding w3-round-large" style="margin:10% 10%">
