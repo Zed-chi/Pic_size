@@ -3,45 +3,18 @@ html,body{
     margin:0;
 }
 body {
+	background:url("../pics/basic2-032_scissors_cut-128.png");
+}
+
+.task{
+    position:absolute;
+    top:1%;
+    right:1%;
+    z-index:1;
 }
 
 #image{
-    position:relative;
-    width:500px;
-    height:500px;
-    background:linear-gradient(green,yellow);
+    border:1px solid red;
     overflow:hidden;
-}
-
-#lineX{
-    height:100%;
-    width:1px;
-    border-left:1px solid yellow;
-    position:absolute;
-    top:0;
-    left:0;
-}
-#lineY{
-    height:1px;
-    width:100%;
-    border-top:1px solid red;
-    position:absolute;
-    top:0;
-    left:0; 
-}
-.newLineX{
-    height:100%;
-    width:1px;
-    border-left:1px dashed yellow;
-    position:absolute;
-    top:0;
-    left:0;
-}
-.newLineY{
-    width:100%;
-    height:1px;
-    border-top:1px dashed pink;
-    position:absolute;
-    top:0;
-    left:0;
+    cursor:crosshair;
 }
