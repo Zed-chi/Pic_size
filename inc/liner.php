@@ -10,20 +10,18 @@
 
   <ul class="w3-ul">
       <?php
-        $files = scandir("Upload");
+        $files = $_FILES["images"]["tmp_name"];
         $count = 0;
         foreach($files as $file){
-          if(substr($file, 0, 1) != "." ){
-          echo '<li class="w3-panel 
+          echo "<li class='w3-panel 
                   w3-light-grey 
                   w3-btn 
-                  w3-block"
-                  data = "Upload/'.$file.'" idToProcess = "',$count.'">';  
+                  w3-block'
+                  data=$file.'.jpg' idToProcess=$count>";  
           echo $file;          
           echo "</li>\n";
           $count++;
-          } 
-        }
+          }
       ?>
   </ul>
 
