@@ -1,49 +1,31 @@
 <?php
-$session_name;
+
 include 'inc/header.php';
 
-if( !isset($_POST["process"]) && isset($_POST["submit"])  ){	
-//сохранить файлы,
-//переименовать,
-    $num = count($_FILES['images']['name']);
-    $session_name = time();
-    mkdir("Upload/".$session_name);
-    
+if( !isset($_POST["process"]) && isset($_POST["submit"])  ){
+	$num = count($_FILES['images']['name']);
+    //+сохранить файлы,
+    //переименовать,
     for($i = 0; $i<$num; $i++){
 		$file = $_FILES["images"]["tmp_name"][$i];
 		$file_name = $_FILES["images"]["name"][$i];
-        
-		switch($_FILES["images"]["type"][$i]){
-		    case "image/gif":
-		        $ext = ".gif";
-		        copy($file, "Upload/$session_name/".$file_name.$ext);
-		        break;
-            case "image/jpeg":
-                $ext = ".jpg";
-                copy($file, "Upload/$session_name/".$file_name.$ext);
-                break;
-            case "image/png":
-		        $ext = ".png";
-		        copy($file, "Upload/$session_name/".$file_name.$ext);
-		        break;
-		}
+		copy($file, "Upload/$file_name");
 	}
-//сгенерировать страницу,
-//вложить сценарий со страницей
+    //сгенерировать страницу,
+    //вложить сценарий со страницей
     include 'inc/liner.php';
 }
-
 elseif( isset($_POST["process"]) ){
-//декодировать json
-    $values = json_decode($_POST["process"], true);
-//пройтись циклом по файлам
-    $files = scandir("Upload/$session_name");
-	$count = 0;
-//в соответствии с параметрами
-//разрезать и сохранить нужные файлы
+    //декодировать json
+    	$values = json_decode($_POST["process"], true);
+    //пройтись циклом по файлам
+    	$files = scandir("Upload");
+		$count = 0;
+	//в соответствии с параметрами
+    //разрезать и сохранить нужные файлы
   	foreach($files as $file){
 	    if(substr($file, 0, 1) != "." ){
-			$filename = "Upload/$session_name/".$file;
+			$filename = "Upload/".$file;
 			$size = getimagesize($filename);
 			$width = $size[0];
 			$height = $size[1];
@@ -76,8 +58,7 @@ elseif( isset($_POST["process"]) ){
 		    imagedestroy($src);
 		    unlink($filename);
 	    }
-		
-  	}
+	}
 
 	$folders = scandir("Upload");
 	$zip = new ZipArchive();
@@ -96,10 +77,7 @@ elseif( isset($_POST["process"]) ){
 				}
 			}
 		}
-		//rmdir("Upload/".$folder);
 	}
-	echo "numfiles: " . $zip->numFiles . "\n";
-	echo "status:" . $zip->status . "\n";
 	$zip->close();
 	
 	foreach($folders as $folder){
@@ -112,21 +90,18 @@ elseif( isset($_POST["process"]) ){
 			}
 			rmdir("Upload/".$folder);
 		}
-		
 	}	
-//заархивировать файлы и отдать пользователю
-//удалить все к херам
-    
-// Будем передавать PDF
-header('Content-Type: application/zip');
-header('Content-Disposition: attachment; filename="zippaaa"');
-readfile($filename);
-unlink($filename);
-}
+    //заархивировать файлы и отдать пользователю
+    //удалить все к херам
 
+header('Content-Type: application/zip');
+header('Content-Disposition: attachment; filename="images.zip"');
+readfile($filename);
+unlink($filename);   
+}
 else
 {
-//Отобразить форму загрузки файла
+    #Отобразить форму загрузки файла
     include 'inc/loadpage.php';
 }
 
